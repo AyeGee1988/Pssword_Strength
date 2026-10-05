@@ -1,0 +1,67 @@
+import string
+from pathlib import Path
+
+with Path(__file__).with_name("common.txt").open("r", encoding="utf-8") as f:
+    common_passwords = {line.strip().casefold() for line in f if line.strip()}
+
+while True:
+    password = input("Enter the password: ")
+
+    if password.casefold() in common_passwords:
+        print("Password was found in the common password list. Please choose a different one.")
+        continue
+
+    if len(password) < 8:
+        print("Password is too short. Use at least 8 characters.")
+        continue
+
+    upper_case = any(c in string.ascii_uppercase for c in password)
+    lower_case = any(c in string.ascii_lowercase for c in password)
+    special = any(c in string.punctuation for c in password)
+    digits = any(c in string.digits for c in password)
+
+    character_types = {
+        "uppercase": upper_case,
+        "lowercase": lower_case,
+        "special": special,
+        "digits": digits,
+    }
+
+    character_count = sum(character_types.values())
+    if character_count < 3:
+        print("Password must include at least 3 different character types.")
+        continue
+
+    length = len(password)
+    score = 0
+
+    if length >= 8:
+        score += 1
+    if length >= 12:
+        score += 1
+    if length >= 16:
+        score += 1
+    if length >= 20:
+        score += 1
+
+    if character_count > 1:
+        score += 1
+    if character_count > 2:
+        score += 1
+    if character_count > 3:
+        score += 1
+
+    print(f"Password length: {length}")
+    print(f"Password has {character_count} different character types.")
+    print(f"Total score: {score}")
+
+    if score < 4:
+        print("Password is weak")
+    elif score == 4:
+        print("Password is moderate")
+    elif score >= 5:
+        print("Password is strong")
+    else:
+        print("Password is good")
+
+    break
